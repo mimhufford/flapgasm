@@ -38,8 +38,12 @@ draw_bird:
     mov BYTE [es:10*WIDTH+BIRD_X], BIRD_COL
 	ret
 
-bird_y: dw 100 ; starting bird y position
-bird_dy: dw 0  ; starting bird y velocity
+; global variables
+x:       dw   0  ; used whenever we want to loop over x
+y:       dw   0  ; used whenever we want to loop over y
+bird_y:  dw 100  ; starting bird y position
+bird_dy: dw   0  ; starting bird y velocity
 
+; pad to 510 bytes and output bootloader magic value
 times 510 - ($-$$) db 0
 dw 0xaa55
