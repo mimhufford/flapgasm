@@ -14,6 +14,12 @@
 mov ax, 0x13
 int 0x10
 
+game_loop:
+	; TODO: handle keyboard, just loop forever for now
+    call clear_screen
+	call draw_bird
+	jmp game_loop
+
 clear_screen:
     mov ax, VGA_MEM
     mov es, ax
@@ -23,17 +29,17 @@ clear_screen:
         inc bx
         cmp bx, VGA_SIZE
         jb clear_screen_inner
+    ret
 
 ; TODO: drawing single pixel atm, need to loop for BIRD_SIZE
 draw_bird:
     mov ax, VGA_MEM
     mov es, ax
     mov BYTE [es:10*WIDTH+BIRD_X], BIRD_COL
-
-; TODO: handle keyboard, just loop forever for now
-jmp $
+	ret
 
 bird_y: dw 100 ; starting bird y position
+bird_dy: dw 0  ; starting bird y velocity
 
 times 510 - ($-$$) db 0
 dw 0xaa55
