@@ -43,41 +43,37 @@ game_loop:
 	mov word [bird_dy], 0
 	didnt_hit_floor:
 
-	; TODO: can maybe weld these in now?
-    call clear_screen
-	call draw_bird
-    iret ; return from interrupt
-
-clear_screen:
-    mov bx, 0
+    ; Clear screen
+    xor bx, bx
 	clear_screen_inner:
         mov byte [es:bx], BG_COL
         inc bx
         cmp bx, VGA_SIZE
         jb clear_screen_inner
-    ret
-
-draw_bird:
+    
+    ; Draw bird
 	mov word [y], 0
 	draw_bird_row:
-	    mov word [x], 0
-		draw_bird_col:
-        	mov bx, WIDTH
-        	mov ax, [bird_y]
-			add ax, [x]
-        	mul bx
-    		add ax, [y]
-        	mov bx, ax
+        mov word [x], 0
+        draw_bird_col:
+            mov bx, WIDTH
+            mov ax, [bird_y]
+            add ax, [x]
+            mul bx
+            add ax, [y]
+            mov bx, ax
             mov byte [es:bx+BIRD_X], BIRD_COL
+            ; Advance col loop
+            inc word [x]
+            cmp word [x], BIRD_SIZE
+            jl  draw_bird_col
+        ; Advance row loop
+        inc word [y]
+        cmp word [y], BIRD_SIZE
+        jl  draw_bird_row
 
-			inc word [x]
-			cmp word [x], BIRD_SIZE
-			jl  draw_bird_col
-    
-    	inc word [y]
-    	cmp word [y], BIRD_SIZE
-    	jl  draw_bird_row
-	ret
+    ; Return from interrupt
+    iret
 
 ; Global variables
 x:       dw   0          ; used whenever to loop over x
