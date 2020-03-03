@@ -21,6 +21,8 @@ mov es, ax
 
 game_loop:
 	; TODO: handle keyboard, just loop forever for now
+	; TODO: some sort of vsync interrupt
+	; TODO: apply gravity (dy += gravity, y += dy)
     call clear_screen
 	call draw_bird
 	jmp game_loop
@@ -28,7 +30,7 @@ game_loop:
 clear_screen:
     mov bx, 0
 	clear_screen_inner:
-        mov BYTE [es:bx], BG_COL
+        mov byte [es:bx], BG_COL
         inc bx
         cmp bx, VGA_SIZE
         jb clear_screen_inner
@@ -45,7 +47,7 @@ draw_bird:
         	mul bx
     		add ax, [y]
         	mov bx, ax
-            mov BYTE [es:bx+BIRD_X], BIRD_COL
+            mov byte [es:bx+BIRD_X], BIRD_COL
 
 			inc word [x]
 			cmp word [x], BIRD_SIZE
@@ -59,8 +61,8 @@ draw_bird:
 ; global variables
 x:       dw   0  ; used whenever we want to loop over x
 y:       dw   0  ; used whenever we want to loop over y
-bird_y:  db 100  ; starting bird y position
-bird_dy: db   0  ; starting bird y velocity
+bird_y:  dw 100  ; starting bird y position
+bird_dy: dw   0  ; starting bird y velocity
 
 ; pad to 510 bytes and output bootloader magic value
 times 510 - ($-$$) db 0
