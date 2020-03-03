@@ -34,17 +34,22 @@ clear_screen:
         jb clear_screen_inner
     ret
 
-; TODO: drawing single row atm, need to loop for BIRD_SIZE
 draw_bird:
 	mov word [x], 0
-    
 	draw_bird_row:
-    	mov bx, WIDTH
-    	mov ax, [bird_y]
-    	mul bx
-		add ax, [x]
-    	mov bx, ax
-        mov BYTE [es:bx+BIRD_X], BIRD_COL
+	    mov word [y], 0
+		draw_bird_col:
+        	mov bx, WIDTH
+        	mov ax, [bird_y]
+			add ax, [y]
+        	mul bx
+    		add ax, [x]
+        	mov bx, ax
+            mov BYTE [es:bx+BIRD_X], BIRD_COL
+
+			inc word [y]
+			cmp word [y], BIRD_SIZE
+			jl  draw_bird_col
     
     	inc word [x]
     	cmp word [x], BIRD_SIZE
