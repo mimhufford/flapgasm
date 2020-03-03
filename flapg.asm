@@ -1,3 +1,5 @@
+org 0x7C00 ; offset to bootloader address range
+
 %define WIDTH     320
 %define HEIGHT    200
 %define VGA_MEM   0xA000
@@ -9,10 +11,13 @@
 %define BIRD_COL  0
 %define BG_COL    2
 
-; Enter VGA mode
-; 320x200x8-bits/pixel
+; Enter VGA mode, 320x200 x 8-bits per pixel
 mov ax, 0x13
 int 0x10
+
+; Store VGA memory address in es segment register
+mov ax, VGA_MEM
+mov es, ax
 
 game_loop:
 	; TODO: handle keyboard, just loop forever for now
@@ -21,8 +26,6 @@ game_loop:
 	jmp game_loop
 
 clear_screen:
-    mov ax, VGA_MEM
-    mov es, ax
     mov bx, 0
 	clear_screen_inner:
         mov BYTE [es:bx], BG_COL
@@ -33,8 +36,6 @@ clear_screen:
 
 ; TODO: drawing single pixel atm, need to loop for BIRD_SIZE
 draw_bird:
-    mov ax, VGA_MEM
-    mov es, ax
     mov BYTE [es:10*WIDTH+BIRD_X], BIRD_COL
 	ret
 
