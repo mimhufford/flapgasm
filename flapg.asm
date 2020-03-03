@@ -35,24 +35,24 @@ clear_screen:
     ret
 
 draw_bird:
-	mov word [x], 0
+	mov word [y], 0
 	draw_bird_row:
-	    mov word [y], 0
+	    mov word [x], 0
 		draw_bird_col:
         	mov bx, WIDTH
         	mov ax, [bird_y]
-			add ax, [y]
+			add ax, [x]
         	mul bx
-    		add ax, [x]
+    		add ax, [y]
         	mov bx, ax
             mov BYTE [es:bx+BIRD_X], BIRD_COL
 
-			inc word [y]
-			cmp word [y], BIRD_SIZE
+			inc word [x]
+			cmp word [x], BIRD_SIZE
 			jl  draw_bird_col
     
-    	inc word [x]
-    	cmp word [x], BIRD_SIZE
+    	inc word [y]
+    	cmp word [y], BIRD_SIZE
     	jl  draw_bird_row
 	ret
 
