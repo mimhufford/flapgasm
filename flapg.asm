@@ -15,17 +15,31 @@ org 0x7C00 ; offset to bootloader address range
 mov ax, 0x13
 int 0x10
 
-; Store VGA memory address in es segment register
-mov ax, VGA_MEM
-mov es, ax
+; Make game run using the system timer
+; by pointing interrupt 1C to game_loop
+mov dword [0x70], game_loop
+
+; Stay here forever, game_loop will run on timer
+jmp $
 
 game_loop:
-	; TODO: handle keyboard, just loop forever for now
-	; TODO: some sort of vsync interrupt
-	; TODO: apply gravity (dy += gravity, y += dy)
+    ; Store VGA memory address in segment register
+    mov ax, VGA_MEM
+    mov es, ax
+
+	; TODO: handle keyboard - int 16
+    ; TODO: collide with floor
+
+    ; Apply gravity
+	mov ax, GRAVITY
+	add word [bird_dy], ax
+	mov ax, [bird_dy]
+	add word [bird_y], ax
+
+	; TODO: can maybe weld these in now?
     call clear_screen
 	call draw_bird
-	jmp game_loop
+    iret ; return from interrupt
 
 clear_screen:
     mov bx, 0
