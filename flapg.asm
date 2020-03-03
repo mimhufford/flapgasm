@@ -34,16 +34,28 @@ clear_screen:
         jb clear_screen_inner
     ret
 
-; TODO: drawing single pixel atm, need to loop for BIRD_SIZE
+; TODO: drawing single row atm, need to loop for BIRD_SIZE
 draw_bird:
-    mov BYTE [es:10*WIDTH+BIRD_X], BIRD_COL
+	mov word [x], 0
+    
+	draw_bird_row:
+    	mov bx, WIDTH
+    	mov ax, [bird_y]
+    	mul bx
+		add ax, [x]
+    	mov bx, ax
+        mov BYTE [es:bx+BIRD_X], BIRD_COL
+    
+    	inc word [x]
+    	cmp word [x], BIRD_SIZE
+    	jl  draw_bird_row
 	ret
 
 ; global variables
 x:       dw   0  ; used whenever we want to loop over x
 y:       dw   0  ; used whenever we want to loop over y
-bird_y:  dw 100  ; starting bird y position
-bird_dy: dw   0  ; starting bird y velocity
+bird_y:  db 100  ; starting bird y position
+bird_dy: db   0  ; starting bird y velocity
 
 ; pad to 510 bytes and output bootloader magic value
 times 510 - ($-$$) db 0
