@@ -1,15 +1,16 @@
 org 0x7C00 ; offset to bootloader address range
 
-%define WIDTH     320
-%define HEIGHT    200
-%define VGA_MEM   0xA000
-%define VGA_SIZE  64000 ; 320*200
-%define GRAVITY   1
-%define JUMP_POW  20
-%define BIRD_SIZE 10
-%define BIRD_X    30
-%define BIRD_COL  0
-%define BG_COL    2
+%define WIDTH        320
+%define HEIGHT       200
+%define VGA_MEM      0xA000
+%define VGA_SIZE     64000 ; 320*200
+%define GRAVITY      1
+%define JUMP_POW     20
+%define BIRD_START_Y 50
+%define BIRD_SIZE    10
+%define BIRD_X       30
+%define BIRD_COL     0
+%define BG_COL       2
 
 ; Enter VGA mode, 320x200 x 8-bits per pixel
 mov ax, 0x13
@@ -28,13 +29,19 @@ game_loop:
     mov es, ax
 
 	; TODO: handle keyboard - int 16
-    ; TODO: collide with floor
 
     ; Apply gravity
 	mov ax, GRAVITY
 	add word [bird_dy], ax
 	mov ax, [bird_dy]
 	add word [bird_y], ax
+
+    ; Check for collision with floor
+	cmp word [bird_y], HEIGHT
+	jl  didnt_hit_floor
+    mov word [bird_y], BIRD_START_Y
+	mov word [bird_dy], 0
+	didnt_hit_floor:
 
 	; TODO: can maybe weld these in now?
     call clear_screen
@@ -72,12 +79,12 @@ draw_bird:
     	jl  draw_bird_row
 	ret
 
-; global variables
-x:       dw   0  ; used whenever we want to loop over x
-y:       dw   0  ; used whenever we want to loop over y
-bird_y:  dw 100  ; starting bird y position
-bird_dy: dw   0  ; starting bird y velocity
+; Global variables
+x:       dw   0          ; used whenever to loop over x
+y:       dw   0          ; used whenever to loop over y
+bird_y:  dw BIRD_START_Y ; starting bird y position
+bird_dy: dw   0          ; starting bird y velocity
 
-; pad to 510 bytes and output bootloader magic value
+; Pad to 510 bytes and output bootloader magic value
 times 510 - ($-$$) db 0
 dw 0xaa55
