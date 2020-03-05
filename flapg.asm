@@ -45,6 +45,8 @@ game_loop:
 	mov ax, [bird_dy]
 	add word [bird_y], ax
 
+	;TODO: obstacles
+
     ; Check for collision with top and bottom
 	cmp word [bird_y], HEIGHT
 	jg  did_collide
