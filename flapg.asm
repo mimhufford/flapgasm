@@ -6,7 +6,7 @@ org 0x7C00 ; offset to bootloader address range
 %define VGA_SIZE     64000 ; 320*200
 %define GRAVITY      2
 %define JUMP_POW     20
-%define BIRD_START_Y 50
+%define BIRD_START_Y 75
 %define BIRD_SIZE    10
 %define BIRD_X       30
 %define BIRD_COL     0
@@ -45,12 +45,17 @@ game_loop:
 	mov ax, [bird_dy]
 	add word [bird_y], ax
 
-    ; Check for collision with floor
+    ; Check for collision with top and bottom
 	cmp word [bird_y], HEIGHT
-	jl  didnt_hit_floor
-    mov word [bird_y], BIRD_START_Y
-	mov word [bird_dy], 0
-	didnt_hit_floor:
+	jg  did_collide
+    cmp word [bird_y], 0
+	jl  did_collide
+	jmp didnt_collide
+
+	did_collide:
+        mov word [bird_y], BIRD_START_Y
+    	mov word [bird_dy], 0
+    didnt_collide:
 
     ; Clear screen
     xor bx, bx
