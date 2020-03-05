@@ -4,7 +4,7 @@ org 0x7C00 ; offset to bootloader address range
 %define HEIGHT       200
 %define VGA_MEM      0xA000
 %define VGA_SIZE     64000 ; 320*200
-%define GRAVITY      1
+%define GRAVITY      2
 %define JUMP_POW     20
 %define BIRD_START_Y 50
 %define BIRD_SIZE    10
@@ -21,14 +21,23 @@ int 0x10
 mov dword [0x70], game_loop
 
 ; Stay here forever, game_loop will run on timer
-jmp $
+input_loop:
+	; Check if key was pressed
+    mov ah, 1
+    int 0x16
+	; If no key was pressed loop back around
+    jz input_loop
+	; Otherwise, remove the event from the buffer
+	mov ah, 0
+	int 0x16
+	; FLAP!
+    sub word [bird_dy], JUMP_POW
+    jmp input_loop
 
 game_loop:
     ; Store VGA memory address in segment register
     mov ax, VGA_MEM
     mov es, ax
-
-	; TODO: handle keyboard - int 16
 
     ; Apply gravity
 	mov ax, GRAVITY
