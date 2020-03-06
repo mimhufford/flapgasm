@@ -22,15 +22,15 @@ mov dword [0x70], game_loop
 
 ; Stay here forever, game_loop will run on timer
 input_loop:
-	; Check if key was pressed
+    ; Check if key was pressed
     mov ah, 1
     int 0x16
-	; If no key was pressed loop back around
+    ; If no key was pressed loop back around
     jz input_loop
-	; Otherwise, remove the event from the buffer
-	mov ah, 0
-	int 0x16
-	; FLAP!
+    ; Otherwise, remove the event from the buffer
+    mov ah, 0
+    int 0x16
+    ; FLAP!
     sub word [bird_dy], JUMP_POW
     jmp input_loop
 
@@ -40,36 +40,36 @@ game_loop:
     mov es, ax
 
     ; Apply gravity
-	mov ax, GRAVITY
-	add word [bird_dy], ax
-	mov ax, [bird_dy]
-	add word [bird_y], ax
+    mov ax, GRAVITY
+    add word [bird_dy], ax
+    mov ax, [bird_dy]
+    add word [bird_y], ax
 
-	;TODO: obstacles
+    ;TODO: obstacles
 
     ; Check for collision with top and bottom
-	cmp word [bird_y], HEIGHT
-	jg  did_collide
+    cmp word [bird_y], HEIGHT
+    jg  did_collide
     cmp word [bird_y], 0
-	jl  did_collide
-	jmp didnt_collide
+    jl  did_collide
+    jmp didnt_collide
 
-	did_collide:
+    did_collide:
         mov word [bird_y], BIRD_START_Y
-    	mov word [bird_dy], 0
+        mov word [bird_dy], 0
     didnt_collide:
 
     ; Clear screen
     xor bx, bx
-	clear_screen_inner:
+    clear_screen_inner:
         mov byte [es:bx], BG_COL
         inc bx
         cmp bx, VGA_SIZE
         jb clear_screen_inner
     
     ; Draw bird
-	mov word [y], 0
-	draw_bird_row:
+    mov word [y], 0
+    draw_bird_row:
         mov word [x], 0
         draw_bird_col:
             mov bx, WIDTH
@@ -96,6 +96,9 @@ x:       dw   0          ; used whenever to loop over x
 y:       dw   0          ; used whenever to loop over y
 bird_y:  dw BIRD_START_Y ; starting bird y position
 bird_dy: dw   0          ; starting bird y velocity
+obs0_x:  dw WIDTH        ; position of obstacle
+obs0_y:  db 100          ; position of gap in obstacle
+obs0_h:  db 90           ; size of gap in obstacle
 
 ; Pad to 510 bytes and output bootloader magic value
 times 510 - ($-$$) db 0
